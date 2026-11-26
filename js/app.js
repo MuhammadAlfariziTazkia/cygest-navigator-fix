@@ -51,7 +51,6 @@
     pid: null,
     ev: 0,
     filter: null,
-    checks: {}, // pid -> Set(index)
   };
 
   /* ------------------------------------------------------------- Elements */
@@ -114,14 +113,14 @@
 
   function pageRecognize(p) {
     const cat = CATEGORIES[p.cat];
-    const on = state.checks[p.id] || new Set();
+    // Checklist dianimasikan otomatis (lihat playRecognize), bukan di-tap
     const checks = p.recognize.map((t, i) => {
       // "Judul: isi" → judul ditebalkan
       const m = t.match(/^([^:]{3,40}):\s(.+)$/);
       const html = m ? `<b>${esc(m[1])}:</b> ${esc(m[2])}` : esc(t);
-      return `<button class="check${on.has(i) ? ' is-on' : ''}" data-check="${i}" aria-pressed="${on.has(i)}" data-a style="--i:${2 + i}">
+      return `<li class="check" data-a style="--i:${2 + i}">
         <span class="check__box">${icon('check')}</span><span>${html}</span>
-      </button>`;
+      </li>`;
     }).join('');
 
     return `
@@ -138,9 +137,8 @@
         <div data-a style="--i:1">
           <span class="eyebrow">Step 2 · Recognize</span>
           <h2 class="recog__q" style="margin-top:.45rem">Does your patient experience these?</h2>
-          <p class="recog__hint">Tap untuk konfirmasi bersama Dokter</p>
         </div>
-        <div class="checks">${checks}</div>
+        <ul class="checks">${checks}</ul>
         <div class="need" id="need" data-a style="--i:${3 + p.recognize.length}">
           <span class="need__icon">${icon('target')}</span>
           <div><h3>Individualization need</h3><p>${esc(p.need)}</p></div>
@@ -301,7 +299,33 @@
   }
 
   /* -------------------------------------------------------- Animations */
+  /* Recognize: centang item satu per satu (atas → bawah), lalu sorot
+     "Individualization need", lalu tombol CTA berdenyut memancing klik. */
+  let seqTimers = [];
+  function playRecognize(root) {
+    seqTimers.forEach(clearTimeout);
+    seqTimers = [];
+    const items = $$('.check', root);
+    const need = $('.need', root);
+    const cta = $('.cta', root);
+    if (!items.length) return;
+    const at = (ms, fn) => seqTimers.push(setTimeout(fn, reduced() ? 0 : ms));
+
+    const START = 900;  // setelah reveal bertahap selesai
+    const STEP = 520;   // jeda antar centang
+    items.forEach((el, i) => at(START + i * STEP, () => el.classList.add('is-on')));
+    const done = START + items.length * STEP;
+    at(done + 80, () => need && need.classList.add('is-pulse'));
+    at(done + 650, () => {
+      // Di layar pendek CTA disembunyikan → pancing tombol Next di dock
+      const target = cta && cta.offsetParent ? cta : nextBtn;
+      target.classList.add('is-nudge');
+    });
+  }
+
   function animateIn(root) {
+    nextBtn.classList.remove('is-nudge');
+    playRecognize(root);
     const run = () => {
       $$('.bar__fill', root).forEach((b) => { b.style.width = `${b.dataset.w}%`; });
       $$('.flow', root).forEach((f) => f.classList.add('is-run'));
@@ -588,19 +612,6 @@
         const p = byId(c.dataset.pid);
         c.classList.toggle('is-dim', !!state.filter && p.cat !== state.filter);
       });
-      return;
-    }
-    if (t.dataset.check !== undefined) {
-      const i = +t.dataset.check;
-      const set = state.checks[state.pid] || (state.checks[state.pid] = new Set());
-      set.has(i) ? set.delete(i) : set.add(i);
-      t.classList.toggle('is-on', set.has(i));
-      t.setAttribute('aria-pressed', set.has(i));
-      const p = byId(state.pid);
-      if (set.size === p.recognize.length) {
-        const need = $('#need');
-        need.classList.remove('is-pulse'); void need.offsetWidth; need.classList.add('is-pulse');
-      }
       return;
     }
     if (t.dataset.go) { go(t.dataset.go); return; }
