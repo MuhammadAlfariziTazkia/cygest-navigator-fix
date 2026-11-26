@@ -1,0 +1,5 @@
+# Data mentah client & catatan internal — tidak dipublikasikan
+*.docx
+*.jpeg
+STRATEGI.md
+.DS_Store

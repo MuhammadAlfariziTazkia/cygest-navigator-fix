@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0E3B2E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Patient Navigator">
+  <title>Cygest Patient Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Top bar -->
+    <header class="topbar">
+      <button class="brand" data-go="explore" aria-label="Kembali ke Explore">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M16 3c6 4 9 9 9 14a9 9 0 0 1-18 0c0-5 3-10 9-14z" fill="currentColor" opacity=".25"/><path d="M16 8c3.6 2.8 5.4 6 5.4 9.2a5.4 5.4 0 0 1-10.8 0C10.6 14 12.4 10.8 16 8z" fill="currentColor"/></svg>
+        </span>
+        <span class="brand__text">
+          <strong>Cygest</strong>
+          <small>Patient Navigator</small>
+        </span>
+      </button>
+
+      <nav class="stepper" aria-label="Langkah">
+        <div class="stepper__track"><div class="stepper__fill" id="stepFill"></div></div>
+        <button class="step" data-step="explore"><span class="step__num">1</span><span class="step__label">Explore</span></button>
+        <button class="step" data-step="recognize"><span class="step__num">2</span><span class="step__label">Recognize</span></button>
+        <button class="step" data-step="recommend"><span class="step__num">3</span><span class="step__label">Recommend</span></button>
+      </nav>
+
+      <div class="topbar__actions">
+        <button class="icon-btn" id="refBtn" aria-label="Referensi" hidden>
+          <svg viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5m0-15v15m0 0A1.5 1.5 0 0 0 6.5 21H19M9 7.5h6M9 11h4"/></svg>
+          <span>Ref</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Pages render here -->
+    <main class="stage" id="stage" aria-live="polite"></main>
+
+    <!-- Bottom dock: back / profile switcher / next -->
+    <footer class="dock" id="dock">
+      <button class="nav-btn nav-btn--ghost" id="prevBtn" aria-label="Sebelumnya">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span id="prevLabel">Back</span>
+      </button>
+      <div class="switcher" id="switcher" role="tablist" aria-label="Ganti profil pasien"></div>
+      <button class="nav-btn" id="nextBtn" aria-label="Berikutnya">
+        <span id="nextLabel">Next</span><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </footer>
+  </div>
+
+  <!-- References drawer -->
+  <div class="sheet" id="refSheet" aria-hidden="true">
+    <div class="sheet__backdrop" data-close></div>
+    <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="refTitle">
+      <div class="sheet__grip"></div>
+      <div class="sheet__head">
+        <h3 id="refTitle">Referensi</h3>
+        <button class="icon-btn" data-close aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <ol class="sheet__list" id="refList"></ol>
+    </div>
+  </div>
+
+  <!-- Figure lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lightbox__bar">
+      <span class="lightbox__count" id="lbCount"></span>
+      <button class="icon-btn icon-btn--light" data-close aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="lightbox__stage" id="lbStage">
+      <img id="lbImg" alt="">
+    </div>
+    <div class="lightbox__foot">
+      <button class="icon-btn icon-btn--light" id="lbPrev" aria-label="Gambar sebelumnya"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <p id="lbCaption"></p>
+      <button class="icon-btn icon-btn--light" id="lbNext" aria-label="Gambar berikutnya"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+    <p class="lightbox__hint">Tap gambar untuk zoom</p>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
